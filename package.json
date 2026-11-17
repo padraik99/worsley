@@ -1,0 +1,10 @@
+{
+  "name": "worsley",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Ad-free compass and pocket sextant. Static PWA, no build step.",
+  "type": "module",
+  "scripts": {
+    "test": "node --test"
+  }
+}

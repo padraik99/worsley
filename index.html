@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>Worsley — Compass &amp; Sextant</title>
+<meta name="description" content="Ad-free compass with true north, and a pocket sextant for sun and star sights.">
+<meta name="theme-color" content="#0b1622">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="app">
+<main>
+
+<!-- ============ COMPASS ============ -->
+<section id="tab-compass" class="tab active">
+  <div class="readout">
+    <div id="hdg" aria-live="off">---°</div>
+    <div id="hdg-sub"><span id="cardinal">—</span><span class="dot">·</span><span id="north-label">MAGNETIC</span><span id="acc-label"></span></div>
+  </div>
+  <div class="dial-wrap"><svg id="dial" viewBox="-222 -222 444 444" role="img" aria-label="Compass dial"></svg></div>
+  <div id="steer" class="steer" hidden></div>
+  <div class="chips">
+    <button id="btn-north" class="chip" aria-pressed="true">True north</button>
+    <button id="btn-lock" class="chip" aria-pressed="false">Lock bearing</button>
+    <button id="btn-night" class="chip" aria-pressed="false">Night</button>
+  </div>
+  <button id="pos" class="pos" title="Tap to copy">Waiting for GPS…</button>
+  <div class="grid">
+    <div><label>Elevation</label><b id="g-elev">—</b></div>
+    <div><label>Speed</label><b id="g-speed">—</b></div>
+    <div><label>Variation</label><b id="g-decl">—</b></div>
+    <div><label>Sun bears</label><b id="g-sun">—</b></div>
+  </div>
+</section>
+
+<!-- ============ SEXTANT ============ -->
+<section id="tab-sextant" class="tab">
+  <div class="finder" id="finder">
+    <video id="cam" playsinline muted></video>
+    <div id="edge-help" class="edge-help" hidden>
+      <svg viewBox="0 0 300 150" aria-hidden="true">
+        <line x1="10" y1="128" x2="290" y2="128" class="e-horizon"/>
+        <g transform="rotate(-24 70 118)"><rect x="70" y="108" width="120" height="14" rx="4" class="e-phone"/><line x1="190" y1="108" x2="300" y2="108" class="e-ray"/></g>
+        <circle cx="262" cy="24" r="7" class="e-star"/>
+        <circle cx="48" cy="112" r="9" class="e-eye"/>
+        <text x="150" y="146" text-anchor="middle">Sight along the long edge, bottom → top</text>
+      </svg>
+    </div>
+    <div class="reticle" aria-hidden="true"><i></i><i></i><span></span></div>
+    <button id="btn-cam" class="cam-start">Start camera</button>
+    <div class="alt-box">
+      <div id="alt">—</div>
+      <div id="alt-sub">altitude above horizon</div>
+    </div>
+  </div>
+  <div class="sx-controls">
+    <div class="seg" role="group" aria-label="Sighting mode">
+      <button id="mode-cam" aria-pressed="true">Camera</button>
+      <button id="mode-edge" aria-pressed="false">Edge</button>
+    </div>
+    <button id="btn-sight" class="shoot">Take sight</button>
+    <button id="btn-zero" class="chip">Zero</button>
+  </div>
+  <div class="sx-scroll">
+    <p class="warn">Never look at the Sun directly. In Camera mode watch it on the screen; don't use Edge mode on the Sun.</p>
+    <div id="plan" class="card plan">Local noon needs a GPS fix to predict.</div>
+    <div id="sight-out"></div>
+    <div id="log-wrap" hidden>
+      <h3>Sight log <button id="btn-clear" class="link">clear</button></h3>
+      <ol id="log"></ol>
+    </div>
+    <details class="card">
+      <summary>How to use the pocket sextant</summary>
+      <ul>
+        <li><b>Zero it first.</b> Aim the crosshair at a sea horizon (or any distant flat horizon) and tap Zero. That's your index correction, same idea as on a real sextant.</li>
+        <li><b>Take a sight.</b> Hold the crosshair on the Sun (camera) or sight along the phone's edge at a star, and tap Take sight. Steady your elbows; the reading is averaged over about a second.</li>
+        <li><b>Noon sight.</b> Start a few minutes before local noon, take a sight every minute or so, and keep going until the altitude starts falling. The highest one is your noon sight: its altitude gives latitude, its time gives longitude.</li>
+        <li><b>Polaris.</b> In the northern hemisphere the altitude of Polaris is your latitude to within about ¾°.</li>
+        <li><b>Check against GPS</b> only after you've committed to an answer. Worsley didn't get a reveal button.</li>
+      </ul>
+    </details>
+  </div>
+</section>
+
+<!-- ============ LEARN ============ -->
+<section id="tab-learn" class="tab learn">
+<article>
+  <h1>The sextant</h1>
+  <p class="lede">A sextant measures one thing: the angle between two objects you can see. Usually those are the Sun (or a star) and the horizon. Everything else in celestial navigation is arithmetic on that single number plus the time.</p>
+
+  <h2>What it is</h2>
+  <p>A wedge-shaped frame, one sixth of a circle (hence <i>sext</i>ant), carrying two mirrors and a small telescope. A movable arm swings across a scale engraved on the arc. You look at the horizon through the telescope, swing the arm until the Sun appears to sit on that horizon, and read the angle off the scale.</p>
+
+  <figure>
+    <svg viewBox="0 0 380 300" class="diagram" role="img" aria-label="Schematic of a sextant showing the light paths from the Sun and the horizon">
+      <path d="M230 60 L130 233 M230 60 L330 233" class="d-frame"/>
+      <path d="M130 233 A200 200 0 0 0 330 233" class="d-arc"/>
+      <path d="M230 60 L195 257" class="d-arm"/>
+      <circle cx="195" cy="257" r="6" class="d-arm-end"/>
+      <!-- mirrors -->
+      <line x1="223" y1="41" x2="237" y2="79" class="d-mirror"/>
+      <line x1="168" y1="133" x2="188" y2="167" class="d-mirror"/>
+      <!-- telescope -->
+      <rect x="268" y="142" width="70" height="16" rx="3" class="d-scope"/>
+      <!-- rays -->
+      <path d="M62 8 L230 60 L178 150 L268 150" class="d-sun-ray"/>
+      <path d="M8 150 L178 150" class="d-hz-ray"/>
+      <circle cx="50" cy="10" r="9" class="d-sun"/>
+      <path d="M352 150 q10 -8 20 0 q-10 8 -20 0z" class="d-eye"/>
+      <text x="250" y="52">index mirror</text>
+      <text x="92" y="128">horizon mirror</text>
+      <text x="92" y="141" class="small">(half silvered)</text>
+      <text x="308" y="176">telescope</text>
+      <text x="205" y="282">index arm</text>
+      <text x="318" y="262">arc (scale)</text>
+      <text x="14" y="168">from the horizon</text>
+      <text x="40" y="56">from the Sun</text>
+    </svg>
+    <figcaption>Sunlight bounces off two mirrors; horizon light passes straight through the clear half of the second one. The eye sees both at once.</figcaption>
+  </figure>
+
+  <h2>The trick that makes it work at sea</h2>
+  <p>Try to measure the Sun's height with a protractor and plumb line on a rolling deck and the plumb line swings uselessly. The sextant sidesteps the problem with <b>double reflection</b>. The Sun's light hits the index mirror, bounces to the horizon mirror, and bounces again into your eye, where it is overlaid on the direct view of the horizon.</p>
+  <p>Because both images arrive through the same eyepiece, rocking the instrument moves them <i>together</i>. It's like lining up two photos on a single sheet of tracing paper: shake the sheet all you like, the alignment holds. That is why a navigator can get a reading from a deck that is pitching ten degrees.</p>
+  <p>Double reflection also doubles the angle: turn the mirror 1° and the reflected ray turns 2°. So a 60° arc is engraved to read 120°.</p>
+
+  <h2>From angle to position</h2>
+  <p>At any instant the Sun is directly overhead exactly one spot on Earth. If you measure the Sun at 90°, you're standing on that spot. Measure 89° and you're somewhere on a circle 60 nautical miles from it. Every degree lower puts you 60 miles further out. That is not a coincidence: <b>the nautical mile was defined as one arcminute of the Earth's surface</b>, so one minute of sextant angle is one mile of ocean.</p>
+  <p>Think of the Sun as a streetlamp and your angle as the length of your shadow: the shadow tells you how far you are from the lamp, though not in which direction. An almanac tells you where the lamp is. Two such circles from two sights cross at your position.</p>
+
+  <h3>The noon sight: latitude with almost no maths</h3>
+  <p>At local noon the Sun stops climbing, hangs for a moment, and starts down. Catch that peak altitude and:</p>
+  <p class="formula">Latitude = 90° − altitude + Sun's declination</p>
+  <p>Declination is the Sun's own latitude for that date, looked up in the almanac (this app computes it). No accurate clock needed, which is why the noon sight was the backbone of navigation for centuries.</p>
+
+  <h3>Longitude is a clock problem</h3>
+  <p>The Earth turns 15° an hour. If your chronometer, still keeping Greenwich time, says the Sun peaked at 14:00, you are 2 hours × 15° = 30° west of Greenwich (after a small seasonal correction called the equation of time). The catch: <b>4 seconds of clock error is 1 arcminute of longitude</b>. A chronometer one minute wrong puts you up to 15 miles out.</p>
+
+  <h3>The small print</h3>
+  <p>A raw sextant reading gets corrected before use:</p>
+  <ul>
+    <li><b>Index error</b> — the instrument's own zero offset.</li>
+    <li><b>Dip</b> — your eye is above the sea, so the visible horizon is slightly below true horizontal.</li>
+    <li><b>Refraction</b> — air bends light upward; near the horizon bodies appear about half a degree higher than they are.</li>
+    <li><b>Semi-diameter</b> — you rest the Sun's lower edge on the horizon, then add its radius (about 16′) to get the centre.</li>
+  </ul>
+  <p>A good sextant in practiced hands reads to a fraction of an arcminute, a fraction of a mile.</p>
+
+  <h2>Worsley and the <i>James Caird</i></h2>
+  <p>Frank Worsley, captain of <i>Endurance</i>, navigated a 22½-foot lifeboat roughly 800 nautical miles from Elephant Island to South Georgia in April–May 1916, across the Southern Ocean in autumn. Consider what the method above demands, and what he had:</p>
+  <ul>
+    <li><b>A visible Sun.</b> By his own account he managed only four sights in sixteen days. The rest of the time the sky was overcast.</li>
+    <li><b>A visible horizon.</b> From a small boat in a heavy swell the horizon is the top of the next wave. He took sights from the crests, braced upright by his shipmates, sometimes guessing at the Sun's edge through cloud.</li>
+    <li><b>An accurate clock.</b> He had one working chronometer left, and no way to check it since leaving the ice.</li>
+    <li><b>Dry tables.</b> His almanac and logarithm tables were pulp; pages had to be peeled apart.</li>
+    <li><b>Dead reckoning between sights.</b> Course and speed estimated by eye in a boat thrown around by cross seas. Worsley called it "a merry jest of guesswork".</li>
+  </ul>
+  <p>South Georgia is about a hundred miles long. Miss it and the next land downwind was Africa, with no hope of beating back against the westerlies. He hit it. With four sights.</p>
+
+  <h2>How this app compares</h2>
+  <p>The Sextant tab uses your phone's accelerometer as the horizon reference instead of the visible horizon, the same idea as the "bubble sextants" used in aircraft. You aim; gravity supplies the horizontal. Expect errors of roughly half a degree to a degree, so a noon fix lands you within perhaps 30–60 miles. A real sextant is around a hundred times better. Worsley would not have traded.</p>
+
+  <h2>Compass notes</h2>
+  <ul>
+    <li><b>True vs magnetic.</b> A compass points to the magnetic pole, not the geographic one. The difference (variation, or declination) depends on where you are. With a GPS fix the app applies the World Magnetic Model automatically; the model built in is valid through 2029.</li>
+    <li><b>Calibrate</b> by waving the phone in a figure-eight for a few seconds if the heading seems off.</li>
+    <li><b>Keep clear of metal.</b> Magnetic phone cases, car dashboards, steel desks and speakers will all pull the needle.</li>
+    <li><b>Sun check.</b> The small gold disc on the dial shows where the Sun <i>should</i> bear. If the real Sun isn't over it, your compass is being disturbed. Navigators have checked compasses this way for centuries.</li>
+  </ul>
+</article>
+</section>
+
+</main>
+
+<nav class="tabbar" role="tablist">
+  <button data-tab="compass" class="active" role="tab">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg>Compass</button>
+  <button data-tab="sextant" role="tab">
+    <svg viewBox="0 0 24 24"><path d="M12 3L4 18M12 3l8 15M4 18q8 5 16 0M12 3l-2 17"/></svg>Sextant</button>
+  <button data-tab="learn" role="tab">
+    <svg viewBox="0 0 24 24"><path d="M4 5.5q4-2 8 0v14q-4-2-8 0zM12 5.5q4-2 8 0v14q-4-2-8 0z"/></svg>Learn</button>
+</nav>
+
+<div id="start" class="overlay">
+  <img src="icons/icon.svg" alt="" width="120" height="120">
+  <h1>Worsley</h1>
+  <p>Compass &amp; pocket sextant.<br>No ads. No tracking. Works offline.</p>
+  <button id="btn-start">Start</button>
+  <p class="fine">Uses your phone's motion sensors and location. Nothing leaves the device.</p>
+</div>
+<div id="toast" class="toast" hidden></div>
+</div>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
